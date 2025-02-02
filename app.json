@@ -1,10 +1,22 @@
 {
   "expo": {
-    "scheme": "acme",
+    "name": "gardentreerental",
+    "slug": "gardentreerental",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "gardentreerental",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
     "plugins": [
       "expo-router"
-    ],
-    "name": "gardentreerental",
-    "slug": "gardentreerental"
+    ]
   }
-}
+} 
