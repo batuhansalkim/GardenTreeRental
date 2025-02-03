@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -18,7 +18,7 @@ const RENTAL_DETAILS: { [key: string]: any } = {
     ],
     owner: {
       name: 'Mehmet Yılmaz',
-      phone: '+90 555 123 4567',
+      phone: '+905551234567',
       rating: 4.8
     }
   },
@@ -37,7 +37,7 @@ const RENTAL_DETAILS: { [key: string]: any } = {
     ],
     owner: {
       name: 'Ayşe Kaya',
-      phone: '+90 555 987 6543',
+      phone: '+905559876543',
       rating: 4.9
     }
   }
@@ -63,6 +63,17 @@ export default function RentalDetailScreen() {
       </View>
     );
   }
+
+  const handleCall = async (phoneNumber: string) => {
+    try {
+      await Linking.openURL(`tel:${phoneNumber}`);
+    } catch (error) {
+      Alert.alert(
+        "Hata",
+        "Arama yapılırken bir sorun oluştu. Lütfen daha sonra tekrar deneyin."
+      );
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -111,7 +122,10 @@ export default function RentalDetailScreen() {
               <Text style={styles.rating}>{rental.owner.rating}</Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.contactButton}>
+          <TouchableOpacity 
+            style={styles.contactButton}
+            onPress={() => handleCall(rental.owner.phone)}
+          >
             <Ionicons name="call" size={20} color="#fff" />
             <Text style={styles.contactButtonText}>İletişime Geç</Text>
           </TouchableOpacity>

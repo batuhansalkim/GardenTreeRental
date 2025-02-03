@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Modal, TextInput, Linking, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -51,16 +51,44 @@ const DUMMY_DATA = [
   }
 ];
 
+// Form verisi için interface
+interface RentalFormData {
+  title: string;
+  type: 'tree' | 'garden';
+  price: string;
+  location: string;
+  description: string;
+  phone: string; // Telefon numarası eklendi
+  image: string | null;
+}
+
+interface RentalItem {
+  id: string;
+  title: string;
+  type: 'tree' | 'garden';
+  price: number;
+  location: string;
+  image: string | null;
+  description: string;
+  phone: string;
+}
+
 export default function RentalScreen() {
   const router = useRouter();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RentalFormData>({
     title: '',
     type: 'tree', // veya 'garden'
     price: '',
     location: '',
-    description: ''
+    description: '',
+    phone: '', // Telefon numarası eklendi
+    image: null,
   });
+  const [rentals, setRentals] = useState<RentalItem[]>(DUMMY_DATA);
+  const [filteredRentals, setFilteredRentals] = useState<RentalItem[]>(DUMMY_DATA);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [showPriceModal, setShowPriceModal] = useState(false);
 
   const handleRentalPress = (id: string) => {
     router.push(`/rental/${id}`);
@@ -71,21 +99,63 @@ export default function RentalScreen() {
   };
 
   const handleSubmit = () => {
-    console.log('Form data:', formData);
-    // Burada form verilerini işleyebilirsiniz
+    if (!formData.title || !formData.price || !formData.location || !formData.phone) {
+      Alert.alert('Uyarı', 'Lütfen tüm zorunlu alanları doldurun.');
+      return;
+    }
+
+    const newRental: RentalItem = {
+      id: Date.now().toString(),
+      title: formData.title,
+      type: formData.type,
+      price: Number(formData.price),
+      location: formData.location,
+      description: formData.description,
+      image: formData.image,
+      phone: formData.phone,
+    };
+
+    setRentals([newRental, ...rentals]);
+    setFilteredRentals([newRental, ...rentals]);
     setIsModalVisible(false);
     setFormData({
       title: '',
       type: 'tree',
       price: '',
       location: '',
-      description: ''
+      description: '',
+      phone: '',
+      image: null,
     });
   };
 
   const handleFilterPress = (filter: string) => {
-    // Filtre fonksiyonu eklenecek
-    console.log('Filtre:', filter);
+    setActiveFilter(filter);
+    
+    if (filter === 'price') {
+      setShowPriceModal(true);
+      return;
+    }
+
+    if (filter === 'trees') {
+      setFilteredRentals(rentals.filter(item => item.type === 'tree'));
+    } else if (filter === 'gardens') {
+      setFilteredRentals(rentals.filter(item => item.type === 'garden'));
+    } else {
+      setFilteredRentals(rentals);
+    }
+  };
+
+  const handlePriceSort = (order: 'asc' | 'desc') => {
+    const sorted = [...filteredRentals].sort((a, b) => {
+      if (order === 'asc') {
+        return a.price - b.price;
+      } else {
+        return b.price - a.price;
+      }
+    });
+    setFilteredRentals(sorted);
+    setShowPriceModal(false);
   };
 
   return (
@@ -98,37 +168,69 @@ export default function RentalScreen() {
 
         <View style={styles.filterContainer}>
           <TouchableOpacity 
-            style={styles.filterButton}
+            style={[
+              styles.filterButton,
+              activeFilter === 'trees' && styles.filterButtonActive
+            ]}
             onPress={() => handleFilterPress('trees')}
           >
-            <Ionicons name="leaf" size={16} color="#2E7D32" />
-            <Text style={styles.filterText}>Ağaçlar</Text>
+            <Ionicons 
+              name="leaf" 
+              size={16} 
+              color={activeFilter === 'trees' ? '#fff' : '#2E7D32'} 
+            />
+            <Text style={[
+              styles.filterText,
+              activeFilter === 'trees' && styles.filterTextActive
+            ]}>Ağaçlar</Text>
           </TouchableOpacity>
+          
           <TouchableOpacity 
-            style={styles.filterButton}
+            style={[
+              styles.filterButton,
+              activeFilter === 'gardens' && styles.filterButtonActive
+            ]}
             onPress={() => handleFilterPress('gardens')}
           >
-            <Ionicons name="grid" size={16} color="#2E7D32" />
-            <Text style={styles.filterText}>Bahçeler</Text>
+            <Ionicons 
+              name="grid" 
+              size={16} 
+              color={activeFilter === 'gardens' ? '#fff' : '#2E7D32'} 
+            />
+            <Text style={[
+              styles.filterText,
+              activeFilter === 'gardens' && styles.filterTextActive
+            ]}>Bahçeler</Text>
           </TouchableOpacity>
+          
           <TouchableOpacity 
-            style={styles.filterButton}
+            style={[
+              styles.filterButton,
+              activeFilter === 'price' && styles.filterButtonActive
+            ]}
             onPress={() => handleFilterPress('price')}
           >
-            <Ionicons name="cash" size={16} color="#2E7D32" />
-            <Text style={styles.filterText}>Fiyat</Text>
+            <Ionicons 
+              name="cash" 
+              size={16} 
+              color={activeFilter === 'price' ? '#fff' : '#2E7D32'} 
+            />
+            <Text style={[
+              styles.filterText,
+              activeFilter === 'price' && styles.filterTextActive
+            ]}>Fiyat</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.listContainer}>
-          {DUMMY_DATA.map((item) => (
+          {filteredRentals.map((item) => (
             <TouchableOpacity 
               key={item.id} 
               style={styles.card}
               onPress={() => handleRentalPress(item.id)}
             >
               <Image
-                source={{ uri: item.image }}
+                source={{ uri: item.image || 'https://via.placeholder.com/400x200' }}
                 style={styles.cardImage}
               />
               <View style={styles.cardContent}>
@@ -255,6 +357,17 @@ export default function RentalScreen() {
                 />
               </View>
 
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Telefon Numarası</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="+90"
+                  value={formData.phone}
+                  onChangeText={(text) => setFormData({...formData, phone: text})}
+                  keyboardType="phone-pad"
+                />
+              </View>
+
               <TouchableOpacity style={styles.addImageButton}>
                 <Ionicons name="camera" size={24} color="#2E7D32" />
                 <Text style={styles.addImageText}>Fotoğraf Ekle</Text>
@@ -267,6 +380,41 @@ export default function RentalScreen() {
                 <Text style={styles.submitButtonText}>İlanı Yayınla</Text>
               </TouchableOpacity>
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showPriceModal}
+        transparent={true}
+        animationType="fade"
+      >
+        <View style={styles.priceModalContainer}>
+          <View style={styles.priceModalContent}>
+            <Text style={styles.priceModalTitle}>Fiyata Göre Sırala</Text>
+            
+            <TouchableOpacity 
+              style={styles.priceOption}
+              onPress={() => handlePriceSort('asc')}
+            >
+              <Ionicons name="arrow-up" size={20} color="#2E7D32" />
+              <Text style={styles.priceOptionText}>Ucuzdan Pahalıya</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.priceOption}
+              onPress={() => handlePriceSort('desc')}
+            >
+              <Ionicons name="arrow-down" size={20} color="#2E7D32" />
+              <Text style={styles.priceOptionText}>Pahalıdan Ucuza</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.priceModalCloseButton}
+              onPress={() => setShowPriceModal(false)}
+            >
+              <Text style={styles.priceModalCloseText}>İptal</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -325,6 +473,12 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     color: '#2E7D32',
     fontWeight: '600',
+  },
+  filterButtonActive: {
+    backgroundColor: '#2E7D32',
+  },
+  filterTextActive: {
+    color: '#fff',
   },
   listContainer: {
     padding: 10,
@@ -509,5 +663,48 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  priceModalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  priceModalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 20,
+    width: '80%',
+  },
+  priceModalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2E7D32',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  priceOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  priceOptionText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: '#444',
+  },
+  priceModalCloseButton: {
+    marginTop: 15,
+    padding: 15,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  priceModalCloseText: {
+    color: '#666',
+    fontSize: 16,
+    fontWeight: '600',
   },
 }); 
