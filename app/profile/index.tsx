@@ -90,8 +90,7 @@ export default function ProfileScreen() {
             text: "Çıkış Yap",
             style: 'destructive',
             onPress: () => {
-              // Çıkış işlemleri
-              router.replace('/');
+              router.replace('/(tabs)');
             }
           }
         ]
@@ -101,15 +100,15 @@ export default function ProfileScreen() {
 
     switch (action) {
       case 'activeListings':
-        Alert.alert('Aktif İlanlarım', 'Aktif ilanlarınız burada listelenecek');
+        router.push('./active-listings');
         break;
       
       case 'listingHistory':
-        Alert.alert('Geçmiş İlanlarım', 'Geçmiş ilanlarınız burada listelenecek');
+        router.push('./listing-history');
         break;
       
       case 'editProfile':
-        Alert.alert('Profil Düzenle', 'Profil düzenleme sayfası açılacak');
+        router.push('./edit');
         break;
       
       case 'support':
@@ -138,13 +137,7 @@ export default function ProfileScreen() {
         break;
       
       case 'terms':
-        Alert.alert(
-          "Kullanım Koşulları",
-          "Garden Tree Rental uygulamasını kullanarak, kullanım koşullarımızı kabul etmiş olursunuz.\n\n" +
-          "1. Uygulama üzerinden yapılan kiralamalarda sorumluluk taraflara aittir.\n" +
-          "2. Paylaşılan bilgilerin doğruluğundan kullanıcılar sorumludur.\n" +
-          "3. Kötüye kullanım durumunda hesabınız askıya alınabilir."
-        );
+        router.push('./terms');
         break;
     }
   };

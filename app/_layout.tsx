@@ -15,7 +15,7 @@ export default function AppLayout() {
         options={{
           title: 'Ana Sayfa',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
+            <Ionicons name="home" size={size} color={color} />
           ),
         }}
       />
@@ -24,7 +24,7 @@ export default function AppLayout() {
         options={{
           title: 'Kiralama',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="leaf-outline" size={size} color={color} />
+            <Ionicons name="leaf" size={size} color={color} />
           ),
         }}
       />
@@ -33,7 +33,7 @@ export default function AppLayout() {
         options={{
           title: 'Topluluk',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" size={size} color={color} />
+            <Ionicons name="people" size={size} color={color} />
           ),
         }}
       />
@@ -42,7 +42,7 @@ export default function AppLayout() {
         options={{
           title: 'Profil',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />

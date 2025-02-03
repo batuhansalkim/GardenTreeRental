@@ -3,7 +3,39 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
-const DUMMY_DATA = [
+interface RentalItem {
+  id: string;
+  title: string;
+  type: 'tree' | 'garden';
+  price: number;
+  location: string;
+  image: string | null;
+  description: string;
+  phone: string;
+  createdAt: string;
+}
+
+// Geçen süreyi hesaplayan yardımcı fonksiyon
+const getTimeAgo = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+  const diffMinutes = Math.floor(diffTime / (1000 * 60));
+
+  if (diffDays > 0) {
+    return `${diffDays} gün önce`;
+  } else if (diffHours > 0) {
+    return `${diffHours} saat önce`;
+  } else if (diffMinutes > 0) {
+    return `${diffMinutes} dakika önce`;
+  } else {
+    return 'Az önce';
+  }
+};
+
+const DUMMY_DATA: RentalItem[] = [
   {
     id: '1',
     title: 'Elma Ağacı',
@@ -12,6 +44,8 @@ const DUMMY_DATA = [
     location: 'Kadıköy, İstanbul',
     image: 'https://images.unsplash.com/photo-1613488329064-aafbeb1e4db1',
     description: 'Yıllık bakımlı elma ağacı',
+    phone: '',
+    createdAt: '2024-02-20T10:30:00Z'
   },
   {
     id: '2',
@@ -21,6 +55,8 @@ const DUMMY_DATA = [
     location: 'Beşiktaş, İstanbul',
     image: 'https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e',
     description: '50m² kullanım alanlı hobi bahçesi',
+    phone: '',
+    createdAt: '2024-02-19T15:45:00Z'
   },
   {
     id: '3',
@@ -30,6 +66,8 @@ const DUMMY_DATA = [
     location: 'Üsküdar, İstanbul',
     image: 'https://images.unsplash.com/photo-1578022761797-b8636ac1773c',
     description: 'Taze kiraz ağacı',
+    phone: '',
+    createdAt: '2024-02-18T12:00:00Z'
   },
   {
     id: '4',
@@ -39,6 +77,8 @@ const DUMMY_DATA = [
     location: 'Maltepe, İstanbul',
     image: 'https://images.unsplash.com/photo-1592150621744-aca64f48394a',
     description: 'Hazır sebze yatakları',
+    phone: '',
+    createdAt: '2024-02-17T10:00:00Z'
   },
   {
     id: '5',
@@ -48,6 +88,8 @@ const DUMMY_DATA = [
     location: 'Ataşehir, İstanbul',
     image: 'https://images.unsplash.com/photo-1501595091296-3aa970afb3ff',
     description: 'Verimli armut ağacı',
+    phone: '',
+    createdAt: '2024-02-16T09:00:00Z'
   }
 ];
 
@@ -60,17 +102,6 @@ interface RentalFormData {
   description: string;
   phone: string; // Telefon numarası eklendi
   image: string | null;
-}
-
-interface RentalItem {
-  id: string;
-  title: string;
-  type: 'tree' | 'garden';
-  price: number;
-  location: string;
-  image: string | null;
-  description: string;
-  phone: string;
 }
 
 export default function RentalScreen() {
@@ -111,8 +142,9 @@ export default function RentalScreen() {
       price: Number(formData.price),
       location: formData.location,
       description: formData.description,
-      image: formData.image,
       phone: formData.phone,
+      image: formData.image,
+      createdAt: new Date().toISOString(),
     };
 
     setRentals([newRental, ...rentals]);
@@ -157,6 +189,28 @@ export default function RentalScreen() {
     setFilteredRentals(sorted);
     setShowPriceModal(false);
   };
+
+  const renderItem = ({ item }: { item: RentalItem }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => handleRentalPress(item.id)}
+    >
+      <Image
+        source={{ uri: item.image || 'https://via.placeholder.com/400x200' }}
+        style={styles.cardImage}
+      />
+      <View style={styles.cardContent}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.timeAgo}>{getTimeAgo(item.createdAt)}</Text>
+        </View>
+        <Text style={styles.description}>{item.description}</Text>
+        <Text style={styles.location}>
+          <Ionicons name="location" size={16} color="#666" /> {item.location}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -236,7 +290,7 @@ export default function RentalScreen() {
               <View style={styles.cardContent}>
                 <View style={styles.cardHeader}>
                   <Text style={styles.title}>{item.title}</Text>
-                  <Text style={styles.price}>{item.price} ₺/ay</Text>
+                  <Text style={styles.timeAgo}>{getTimeAgo(item.createdAt)}</Text>
                 </View>
                 <Text style={styles.description}>{item.description}</Text>
                 <Text style={styles.location}>
@@ -516,10 +570,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     flex: 1,
   },
-  price: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2E7D32',
+  timeAgo: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 8,
   },
   description: {
     fontSize: 14,
