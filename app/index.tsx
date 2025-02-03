@@ -125,7 +125,7 @@ export default function HomeScreen() {
       <View style={styles.quickAccessContainer}>
         <TouchableOpacity 
           style={styles.quickAccessButton}
-          onPress={() => router.push('/rental/create')}
+          onPress={() => router.push('/rental')}
         >
           <Ionicons name="add-circle" size={24} color="#fff" />
           <Text style={styles.quickAccessText}>İlan Ver</Text>

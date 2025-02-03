@@ -1,4 +1,44 @@
-# Organik Şehir Bahçeleri – Hobi Bahçesi ve Ağaç Kiralama Uygulaması
+# Garden Tree Rental
+
+Bahçe ve ağaç kiralama platformu mobil uygulaması.
+
+## Proje Hakkında
+
+Garden Tree Rental, insanların bahçe ve ağaçlarını kiraya verebilecekleri veya kiralayabilecekleri bir mobil platformdur. Uygulama, sürdürülebilir tarım ve yeşil alanların paylaşımını teşvik etmeyi amaçlamaktadır.
+
+## Özellikler
+
+- 🌳 Ağaç ve Bahçe Kiralama
+  - İlan oluşturma ve yönetme
+  - Detaylı ilan görüntüleme
+  - Fiyat ve kategori filtreleme
+  - Konum bazlı arama
+
+- 👥 Kullanıcı Profili
+  - Aktif ve geçmiş ilanları görüntüleme
+  - Profil düzenleme
+  - Bildirim tercihleri
+  - İlan yönetimi
+
+- 🤝 Topluluk Özellikleri
+  - İlan paylaşımı
+  - Kullanıcı değerlendirmeleri
+  - İletişim seçenekleri
+
+## Kullanılan Teknolojiler
+
+### Ana Teknolojiler
+- **React Native**: Cross-platform mobil uygulama geliştirme
+- **Expo**: Geliştirme sürecini hızlandıran React Native framework'ü
+- **TypeScript**: Tip güvenliği ve daha iyi kod organizasyonu
+
+### Paketler ve Kütüphaneler
+- **expo-router**: Sayfa yönlendirme ve navigasyon
+- **@expo/vector-icons**: İkon ve semboller
+- **expo-image-picker**: Fotoğraf seçme ve yükleme
+- **react-native**: Temel UI bileşenleri
+
+## Proje Yapısı
 
 ## 🌱 Proje Özeti
 Şehir içindeki kullanılmayan boş arazileri topluluk bahçelerine dönüştüren, mahalle sakinlerine kendi hobi bahçelerini kiralama veya bireysel olarak ağaç satın alarak organik tarım yapma imkânı sunan mobil uygulama projesi.
@@ -95,6 +135,82 @@ npx expo start
 - Reklam ve Ortaklık Gelirleri
 - Premium İçerik ve Eğitim
 - Ek Hizmetler
+
+gardentreerental/
+├── app/
+│ ├── layout.tsx # Ana uygulama layoutu ve tab navigasyonu
+│ ├── index.tsx # Ana sayfa
+│ ├── rental/ # Kiralama modülü
+│ │ ├── layout.tsx # Kiralama sayfaları layoutu
+│ │ ├── index.tsx # İlan listeleme ve filtreleme
+│ │ └── [id].tsx # İlan detay sayfası
+│ ├── profile/ # Profil modülü
+│ │ ├── layout.tsx # Profil sayfaları layoutu
+│ │ ├── index.tsx # Profil ana sayfa
+│ │ ├── edit.tsx # Profil düzenleme
+│ │ └── ... # Diğer profil sayfaları
+│ └── community/ # Topluluk modülü
+│ └── index.tsx # Topluluk sayfası
+└── ...
+
+## Tasarım Prensipleri
+
+1. **Kullanıcı Deneyimi**
+   - Sezgisel navigasyon
+   - Tutarlı tasarım dili
+   - Hızlı yükleme süreleri
+   - Responsive tasarım
+
+2. **Kod Organizasyonu**
+   - TypeScript ile tip güvenliği
+   - Modüler yapı
+   - Yeniden kullanılabilir bileşenler
+   - Clean Code prensipleri
+
+3. **Performans**
+   - Lazy loading
+   - Optimize edilmiş görseller
+   - Minimal render döngüleri
+
+## Önemli Özellikler ve Uygulamalar
+
+### 1. İlan Yönetimi
+- Tarih bazlı sıralama
+- Dinamik filtreleme
+- Gerçek zamanlı güncelleme
+- Resim yükleme desteği
+
+### 2. Kullanıcı Arayüzü
+- Material Design prensipleri
+- Özelleştirilmiş bileşenler
+- Animasyonlar ve geçişler
+- Responsive layout
+
+### 3. Veri Yönetimi
+- Local state management
+- Form validasyonları
+- Error handling
+- Async işlemler
+
+## Gelecek Özellikler
+
+- [ ] Harita entegrasyonu
+- [ ] Mesajlaşma sistemi
+- [ ] Ödeme entegrasyonu
+- [ ] Push notifications
+- [ ] Çoklu dil desteği
+
+## Katkıda Bulunma
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakınız.
 
 ## 🤝 Katkıda Bulunma
 Projeye katkıda bulunmak için lütfen bir issue açın veya pull request gönderin.
