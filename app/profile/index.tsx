@@ -1,85 +1,234 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Switch, Alert, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { useRouter } from 'expo-router';
 
 const USER_DATA = {
   name: 'Ahmet Yılmaz',
   email: 'ahmet@example.com',
+  phone: '+90 555 123 4567',
   avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde',
+  memberSince: '2023',
   stats: {
-    trees: 3,
-    gardens: 1,
-    ratings: 4.8
+    activeListings: 3,
+    completedRentals: 8,
+    totalEarnings: 2450,
+    rating: 4.8,
   }
 };
 
-const MENU_ITEMS = [
+const MENU_SECTIONS = [
   {
-    icon: 'leaf',
-    title: 'Kiraladıklarım',
-    badge: '4'
+    title: 'İlanlarım',
+    items: [
+      {
+        icon: 'leaf',
+        title: 'Aktif İlanlarım',
+        badge: '3',
+        action: 'activeListings'
+      },
+      {
+        icon: 'time',
+        title: 'Geçmiş İlanlarım',
+        action: 'listingHistory'
+      }
+    ]
   },
   {
-    icon: 'heart',
-    title: 'Favorilerim',
-    badge: '6'
+    title: 'Hesap',
+    items: [
+      {
+        icon: 'person',
+        title: 'Kişisel Bilgiler',
+        action: 'editProfile'
+      },
+      {
+        icon: 'notifications',
+        title: 'Bildirim Ayarları',
+        isToggle: true
+      }
+    ]
   },
   {
-    icon: 'notifications',
-    title: 'Bildirimler',
-    badge: '2'
-  },
-  {
-    icon: 'settings',
-    title: 'Ayarlar'
-  },
-  {
-    icon: 'help-circle',
-    title: 'Yardım'
+    title: 'Diğer',
+    items: [
+      {
+        icon: 'help-circle',
+        title: 'Yardım & Destek',
+        action: 'support'
+      },
+      {
+        icon: 'document-text',
+        title: 'Kullanım Koşulları',
+        action: 'terms'
+      },
+      {
+        icon: 'log-out',
+        title: 'Çıkış Yap',
+        isDestructive: true,
+        action: 'logout'
+      }
+    ]
   }
 ];
 
 export default function ProfileScreen() {
+  const [notifications, setNotifications] = useState(true);
+  const router = useRouter();
+
+  const handleMenuPress = (action?: string, isDestructive?: boolean) => {
+    if (isDestructive && action === 'logout') {
+      Alert.alert(
+        "Çıkış Yap",
+        "Hesabınızdan çıkış yapmak istediğinize emin misiniz?",
+        [
+          {
+            text: "İptal",
+            style: "cancel"
+          },
+          {
+            text: "Çıkış Yap",
+            style: 'destructive',
+            onPress: () => {
+              // Çıkış işlemleri
+              router.replace('/');
+            }
+          }
+        ]
+      );
+      return;
+    }
+
+    switch (action) {
+      case 'activeListings':
+        Alert.alert('Aktif İlanlarım', 'Aktif ilanlarınız burada listelenecek');
+        break;
+      
+      case 'listingHistory':
+        Alert.alert('Geçmiş İlanlarım', 'Geçmiş ilanlarınız burada listelenecek');
+        break;
+      
+      case 'editProfile':
+        Alert.alert('Profil Düzenle', 'Profil düzenleme sayfası açılacak');
+        break;
+      
+      case 'support':
+        Alert.alert(
+          "Yardım & Destek",
+          "Size nasıl yardımcı olabiliriz?",
+          [
+            {
+              text: "E-posta Gönder",
+              onPress: () => {
+                Linking.openURL('mailto:destek@gardentreerental.com');
+              }
+            },
+            {
+              text: "Ara",
+              onPress: () => {
+                Linking.openURL('tel:+902121234567');
+              }
+            },
+            {
+              text: "İptal",
+              style: "cancel"
+            }
+          ]
+        );
+        break;
+      
+      case 'terms':
+        Alert.alert(
+          "Kullanım Koşulları",
+          "Garden Tree Rental uygulamasını kullanarak, kullanım koşullarımızı kabul etmiş olursunuz.\n\n" +
+          "1. Uygulama üzerinden yapılan kiralamalarda sorumluluk taraflara aittir.\n" +
+          "2. Paylaşılan bilgilerin doğruluğundan kullanıcılar sorumludur.\n" +
+          "3. Kötüye kullanım durumunda hesabınız askıya alınabilir."
+        );
+        break;
+    }
+  };
+
+  const handleNotificationToggle = (value: boolean) => {
+    setNotifications(value);
+    Alert.alert(
+      value ? 'Bildirimler Açık' : 'Bildirimler Kapalı',
+      value ? 'Artık bildirimleri alacaksınız.' : 'Artık bildirim almayacaksınız.'
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
+      {/* Profil Başlığı */}
       <View style={styles.header}>
         <Image source={{ uri: USER_DATA.avatar }} style={styles.avatar} />
         <Text style={styles.name}>{USER_DATA.name}</Text>
-        <Text style={styles.email}>{USER_DATA.email}</Text>
+        <Text style={styles.memberInfo}>Üyelik: {USER_DATA.memberSince}</Text>
       </View>
 
-      <View style={styles.stats}>
+      {/* İstatistikler */}
+      <View style={styles.statsContainer}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{USER_DATA.stats.trees}</Text>
-          <Text style={styles.statLabel}>Ağaç</Text>
+          <Text style={styles.statNumber}>{USER_DATA.stats.activeListings}</Text>
+          <Text style={styles.statLabel}>Aktif İlan</Text>
         </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{USER_DATA.stats.gardens}</Text>
-          <Text style={styles.statLabel}>Bahçe</Text>
+        <View style={[styles.statItem, styles.statBorder]}>
+          <Text style={styles.statNumber}>{USER_DATA.stats.completedRentals}</Text>
+          <Text style={styles.statLabel}>Kiralama</Text>
         </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{USER_DATA.stats.ratings}</Text>
+        <View style={[styles.statItem, styles.statBorder]}>
+          <Text style={styles.statNumber}>{USER_DATA.stats.rating}</Text>
           <Text style={styles.statLabel}>Puan</Text>
         </View>
       </View>
 
-      <View style={styles.menu}>
-        {MENU_ITEMS.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.menuItem}>
-            <View style={styles.menuItemLeft}>
-              <Ionicons name={item.icon} size={24} color="#2E7D32" />
-              <Text style={styles.menuItemText}>{item.title}</Text>
-            </View>
-            <View style={styles.menuItemRight}>
-              {item.badge && (
+      {/* Menü Bölümleri */}
+      {MENU_SECTIONS.map((section, index) => (
+        <View key={index} style={styles.section}>
+          <Text style={styles.sectionTitle}>{section.title}</Text>
+          {section.items.map((item, itemIndex) => (
+            <TouchableOpacity
+              key={itemIndex}
+              style={[
+                styles.menuItem,
+                item.isDestructive && styles.destructiveItem
+              ]}
+              onPress={() => handleMenuPress(item.action, item.isDestructive)}
+            >
+              <View style={styles.menuItemLeft}>
+                <Ionicons 
+                  name={item.icon as any} 
+                  size={24} 
+                  color={item.isDestructive ? '#FF3B30' : '#2E7D32'} 
+                />
+                <Text style={[
+                  styles.menuItemText,
+                  item.isDestructive && styles.destructiveText
+                ]}>
+                  {item.title}
+                </Text>
+              </View>
+              
+              {item.isToggle ? (
+                <Switch
+                  value={notifications}
+                  onValueChange={handleNotificationToggle}
+                  trackColor={{ false: '#767577', true: '#4CAF50' }}
+                  thumbColor={notifications ? '#2E7D32' : '#f4f3f4'}
+                />
+              ) : item.badge ? (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{item.badge}</Text>
                 </View>
+              ) : !item.isDestructive && (
+                <Ionicons name="chevron-forward" size={20} color="#666" />
               )}
-              <Ionicons name="chevron-forward" size={20} color="#666" />
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      ))}
+
+      <Text style={styles.version}>Versiyon 1.0.0</Text>
     </ScrollView>
   );
 }
@@ -90,9 +239,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
-    backgroundColor: '#fff',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#fff',
   },
   avatar: {
     width: 100,
@@ -101,22 +250,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   name: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  email: {
+  memberInfo: {
     color: '#666',
+    fontSize: 14,
   },
-  stats: {
+  statsContainer: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    marginTop: 10,
+    marginTop: 1,
     padding: 15,
   },
   statItem: {
     flex: 1,
     alignItems: 'center',
+  },
+  statBorder: {
+    borderLeftWidth: 1,
+    borderLeftColor: '#eee',
   },
   statNumber: {
     fontSize: 20,
@@ -126,18 +280,26 @@ const styles = StyleSheet.create({
   statLabel: {
     color: '#666',
     marginTop: 5,
+    fontSize: 12,
   },
-  menu: {
+  section: {
+    marginTop: 20,
     backgroundColor: '#fff',
-    marginTop: 10,
+    paddingVertical: 10,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666',
+    marginLeft: 15,
+    marginBottom: 10,
   },
   menuItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    backgroundColor: '#fff',
   },
   menuItemLeft: {
     flexDirection: 'row',
@@ -146,20 +308,30 @@ const styles = StyleSheet.create({
   menuItemText: {
     marginLeft: 15,
     fontSize: 16,
-  },
-  menuItemRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    color: '#000',
   },
   badge: {
     backgroundColor: '#2E7D32',
-    borderRadius: 10,
+    borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 2,
-    marginRight: 10,
   },
   badgeText: {
     color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  destructiveItem: {
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  destructiveText: {
+    color: '#FF3B30',
+  },
+  version: {
+    textAlign: 'center',
+    color: '#666',
+    padding: 20,
     fontSize: 12,
   },
 }); 
